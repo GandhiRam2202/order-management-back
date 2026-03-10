@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Order Management API</title>
+<style>
+body{
+font-family: Arial;
+background:#f4f6f9;
+padding:40px;
+}
+
+h1{
+text-align:center;
+}
+
+.section{
+background:white;
+padding:20px;
+margin-bottom:30px;
+border-radius:10px;
+box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th,td{
+padding:12px;
+border-bottom:1px solid #ddd;
+text-align:left;
+}
+
+th{
+background:#222;
+color:white;
+}
+
+.method{
+font-weight:bold;
+}
+
+.post{color:#0a7cff;}
+.get{color:#16a34a;}
+.put{color:#f59e0b;}
+.delete{color:#ef4444;}
+</style>
+</head>
+
+<body>
+
+<h1>Order Management System API</h1>
+<h1>API Documentation</h1>
+
+<h1>API_KEY : ORDER_SECURE_KEY</h1>
+
+<div class="section">
+<h2>Authentication APIs</h2>
+<table>
+<tr>
+<th>Method</th>
+<th>Endpoint</th>
+<th>Description</th>
+</tr>
+
+<tr>
+<td class="method post">POST</td>
+<td>/api/auth/register</td>
+<td>User Registration</td>
+</tr>
+
+<tr>
+<td class="method post">POST</td>
+<td>/api/auth/login</td>
+<td>User Login</td>
+</tr>
+
+<tr>
+<td class="method post">POST</td>
+<td>/api/auth/forgot-password</td>
+<td>Send OTP for password reset</td>
+</tr>
+
+<tr>
+<td class="method post">POST</td>
+<td>/api/auth/reset-password</td>
+<td>Reset password using OTP</td>
+</tr>
+
+</table>
+</div>
+
+
+<div class="section">
+<h2>User APIs</h2>
+
+<table>
+
+<tr>
+<th>Method</th>
+<th>Endpoint</th>
+<th>Description</th>
+</tr>
+
+<tr>
+<td class="method get">GET</td>
+<td>/api/products</td>
+<td>Get all products</td>
+</tr>
+
+<tr>
+<td class="method post">POST</td>
+<td>/api/orders/place</td>
+<td>Place new order</td>
+</tr>
+
+<tr>
+<td class="method get">GET</td>
+<td>/api/orders/my-orders</td>
+<td>Get logged in user orders</td>
+</tr>
+
+<tr>
+<td class="method put">PUT</td>
+<td>/api/orders/cancel/:id</td>
+<td>Cancel order</td>
+</tr>
+
+<tr>
+<td class="method put">PUT</td>
+<td>/api/orders/return/:id</td>
+<td>Return delivered order</td>
+</tr>
+
+</table>
+</div>
+
+
+<div class="section">
+<h2>Admin APIs</h2>
+
+<table>
+
+<tr>
+<th>Method</th>
+<th>Endpoint</th>
+<th>Description</th>
+</tr>
+
+<tr>
+<td class="method get">GET</td>
+<td>/api/orders/admin/orders</td>
+<td>Get all orders</td>
+</tr>
+
+<tr>
+<td class="method put">PUT</td>
+<td>/api/orders/admin/update/:id</td>
+<td>Update order status</td>
+</tr>
+
+<tr>
+<td class="method get">GET</td>
+<td>/api/orders/admin/stats</td>
+<td>Order statistics</td>
+</tr>
+
+<tr>
+<td class="method get">GET</td>
+<td>/api/orders/admin/product-stats</td>
+<td>Product statistics</td>
+</tr>
+
+<tr>
+<td class="method get">GET</td>
+<td>/api/orders/admin/revenue</td>
+<td>Total revenue</td>
+</tr>
+
+<tr>
+<td class="method get">GET</td>
+<td>/api/orders/admin/monthly-revenue</td>
+<td>Monthly revenue report</td>
+</tr>
+
+<tr>
+<td class="method get">GET</td>
+<td>/api/orders/admin/orders-today</td>
+<td>Today's orders</td>
+</tr>
+
+<tr>
+<td class="method get">GET</td>
+<td>/api/products/admin/top-products</td>
+<td>Top selling products</td>
+</tr>
+
+<tr>
+<td class="method post">POST</td>
+<td>/api/products/add</td>
+<td>Add product</td>
+</tr>
+
+<tr>
+<td class="method put">PUT</td>
+<td>/api/products/update/:id</td>
+<td>Update product</td>
+</tr>
+
+<tr>
+<td class="method delete">DELETE</td>
+<td>/api/products/delete/:id</td>
+<td>Delete product</td>
+</tr>
+
+</table>
+
+</div>
+
+</body>
+</html>
