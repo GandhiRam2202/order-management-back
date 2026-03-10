@@ -5,12 +5,12 @@ import Product from "../models/Product.js";
 
 /* USER → PLACE ORDER */
 
-export const placeOrder = async (req,res)=>{
+export const placeOrder = async (req, res) => {
 
   const product = await Product.findById(req.body.productId);
 
-  if(!product){
-    return res.status(404).json({message:"Product not found"});
+  if (!product) {
+    return res.status(404).json({ message: "Product not found" });
   }
 
   const order = await Order.create({
@@ -36,10 +36,10 @@ export const placeOrder = async (req,res)=>{
 
 /* USER → VIEW THEIR ORDERS */
 
-export const myOrders = async (req,res)=>{
+export const myOrders = async (req, res) => {
 
   const orders = await Order.find({
-    userId:req.user.id
+    userId: req.user.id
   });
 
   res.json(orders);
@@ -50,21 +50,21 @@ export const myOrders = async (req,res)=>{
 
 /* USER → CANCEL ORDER */
 
-export const cancelOrder = async (req,res)=>{
+export const cancelOrder = async (req, res) => {
 
   const order = await Order.findById(req.params.id);
 
-  if(!order){
-    return res.status(404).json({message:"Order not found"});
+  if (!order) {
+    return res.status(404).json({ message: "Order not found" });
   }
 
-  if(order.userId.toString() !== req.user.id){
-    return res.status(403).json({message:"Unauthorized"});
+  if (order.userId.toString() !== req.user.id) {
+    return res.status(403).json({ message: "Unauthorized" });
   }
 
-  if(order.status === "Delivered"){
+  if (order.status === "Delivered") {
     return res.status(400).json({
-      message:"Delivered orders cannot be cancelled"
+      message: "Delivered orders cannot be cancelled"
     });
   }
 
@@ -81,23 +81,23 @@ export const cancelOrder = async (req,res)=>{
 
 /* USER → RETURN ORDER (7 DAYS) */
 
-export const returnOrder = async (req,res)=>{
+export const returnOrder = async (req, res) => {
 
   const order = await Order.findById(req.params.id);
 
-  if(!order){
-    return res.status(404).json({message:"Order not found"});
+  if (!order) {
+    return res.status(404).json({ message: "Order not found" });
   }
 
   /* ensure only owner returns */
 
-  if(order.userId.toString() !== req.user.id){
-    return res.status(403).json({message:"Unauthorized"});
+  if (order.userId.toString() !== req.user.id) {
+    return res.status(403).json({ message: "Unauthorized" });
   }
 
-  if(order.status !== "Delivered"){
+  if (order.status !== "Delivered") {
     return res.status(400).json({
-      message:"Return allowed only after delivery"
+      message: "Return allowed only after delivery"
     });
   }
 
@@ -107,9 +107,9 @@ export const returnOrder = async (req,res)=>{
     (Date.now() - deliveredDate) /
     (1000 * 60 * 60 * 24);
 
-  if(diffDays > 7){
+  if (diffDays > 7) {
     return res.status(400).json({
-      message:"Return period expired (7 days)"
+      message: "Return period expired (7 days)"
     });
   }
 
@@ -127,7 +127,7 @@ export const returnOrder = async (req,res)=>{
 
 /* ADMIN → VIEW ALL ORDERS */
 
-export const allOrders = async (req,res)=>{
+export const allOrders = async (req, res) => {
 
   const orders = await Order.find()
     .populate("userId");
@@ -185,162 +185,162 @@ export const updateOrderStatus = async (req, res) => {
 
 
 /* ADMIN → ORDER CHART */
-export const orderStats = async (req,res)=>{
+export const orderStats = async (req, res) => {
 
- const totalOrders = await Order.countDocuments()
+  const totalOrders = await Order.countDocuments()
 
- const placed = await Order.countDocuments({status:"Placed"})
- const confirmed = await Order.countDocuments({status:"Confirmed"})
- const in_transit = await Order.countDocuments({status:"In_Transit"})
- const out_for_delivery = await Order.countDocuments({status:"Out_For_Delivery"})
- const delivered = await Order.countDocuments({status:"Delivered"})
- const cancelled = await Order.countDocuments({status:"Cancelled"})
- const returned = await Order.countDocuments({status:"Returned"})
+  const placed = await Order.countDocuments({ status: "Placed" })
+  const confirmed = await Order.countDocuments({ status: "Confirmed" })
+  const in_transit = await Order.countDocuments({ status: "In_Transit" })
+  const out_for_delivery = await Order.countDocuments({ status: "Out_For_Delivery" })
+  const delivered = await Order.countDocuments({ status: "Delivered" })
+  const cancelled = await Order.countDocuments({ status: "Cancelled" })
+  const returned = await Order.countDocuments({ status: "Returned" })
 
- res.json({
-   totalOrders,
-   placed,
-   confirmed,
-   in_transit,
-   out_for_delivery,
-   delivered,
-   cancelled,
-   returned
- })
-
-}
-
-export const productStats = async (req,res)=>{
-
-const stats = await Order.aggregate([
-
-{
-$match:{
-status:"Delivered"
-}
-},
-
-{
-$group:{
-_id:"$productName",
-totalOrders:{ $sum:1 }
-}
-}
-
-])
-
-res.json(stats)
+  res.json({
+    totalOrders,
+    placed,
+    confirmed,
+    in_transit,
+    out_for_delivery,
+    delivered,
+    cancelled,
+    returned
+  })
 
 }
 
+export const productStats = async (req, res) => {
 
-export const revenueStats = async (req,res)=>{
+  const stats = await Order.aggregate([
 
-const revenue = await Order.aggregate([
+    {
+      $match: {
+        status: "Delivered"
+      }
+    },
 
-{
-$match:{
-status:"Delivered"
-}
-},
+    {
+      $group: {
+        _id: "$productName",
+        totalOrders: { $sum: 1 }
+      }
+    }
 
-{
-$group:{
-_id:null,
-totalRevenue:{
-$sum:{
-$multiply:["$productPrice","$quantity"]
-}
-}
-}
-}
+  ])
 
-])
-
-res.json({
-totalRevenue: revenue[0]?.totalRevenue || 0
-})
-
-}
-
-export const monthlyRevenue = async (req,res)=>{
-
-const revenue = await Order.aggregate([
-
-{
-$match:{ status:"Delivered" }
-},
-
-{
-$group:{
-_id:{ $month:"$createdAt" },
-
-revenue:{
-$sum:{
-$multiply:["$productPrice","$quantity"]
-}
-}
-
-}
-},
-
-{
-$sort:{ _id:1 }
-}
-
-])
-
-res.json(revenue)
+  res.json(stats)
 
 }
 
 
-export const ordersToday = async (req,res)=>{
+export const revenueStats = async (req, res) => {
 
-try{
+  const revenue = await Order.aggregate([
 
-const start = new Date()
-start.setHours(0,0,0,0)
+    {
+      $match: {
+        status: "Delivered"
+      }
+    },
 
-const end = new Date()
-end.setHours(23,59,59,999)
+    {
+      $group: {
+        _id: null,
+        totalRevenue: {
+          $sum: {
+            $multiply: ["$productPrice", "$quantity"]
+          }
+        }
+      }
+    }
 
-const orders = await Order.find({
-createdAt:{
-$gte:start,
-$lte:end
-}
-})
+  ])
 
-const stats = {
-Placed:0,
-Confirmed:0,
-In_Transit:0,
-Out_For_Delivery:0,
-Delivered:0,
-Cancelled:0,
-Returned:0
-}
-
-orders.forEach(order=>{
-
-if(stats.hasOwnProperty(order.status)){
-stats[order.status]++
-}
-
-})
-
-res.json({
-total:orders.length,
-stats
-})
-
-}catch(err){
-
-console.log(err)
-res.status(500).json({message:"Server Error"})
+  res.json({
+    totalRevenue: revenue[0]?.totalRevenue || 0
+  })
 
 }
+
+export const monthlyRevenue = async (req, res) => {
+
+  const revenue = await Order.aggregate([
+
+    {
+      $match: { status: "Delivered" }
+    },
+
+    {
+      $group: {
+        _id: { $month: "$createdAt" },
+
+        revenue: {
+          $sum: {
+            $multiply: ["$productPrice", "$quantity"]
+          }
+        }
+
+      }
+    },
+
+    {
+      $sort: { _id: 1 }
+    }
+
+  ])
+
+  res.json(revenue)
+
+}
+
+
+export const ordersToday = async (req, res) => {
+
+  try {
+
+    const start = new Date()
+    start.setHours(0, 0, 0, 0)
+
+    const end = new Date()
+    end.setHours(23, 59, 59, 999)
+
+    const orders = await Order.find({
+      createdAt: {
+        $gte: start,
+        $lte: end
+      }
+    })
+
+    const stats = {
+      Placed: 0,
+      Confirmed: 0,
+      In_Transit: 0,
+      Out_For_Delivery: 0,
+      Delivered: 0,
+      Cancelled: 0,
+      Returned: 0
+    }
+
+    orders.forEach(order => {
+
+      if (stats.hasOwnProperty(order.status)) {
+        stats[order.status]++
+      }
+
+    })
+
+    res.json({
+      total: orders.length,
+      stats
+    })
+
+  } catch (err) {
+
+    console.log(err)
+    res.status(500).json({ message: "Server Error" })
+
+  }
 
 }
 

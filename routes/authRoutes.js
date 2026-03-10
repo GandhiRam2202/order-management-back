@@ -9,7 +9,7 @@ const router = express.Router();
     Register new user
 */
 
-router.post("/register",apiKeyAuth, register);
+router.post("/register", apiKeyAuth, register);
 
 
 /*
@@ -17,7 +17,7 @@ router.post("/register",apiKeyAuth, register);
     Login user
 */
 
-router.post("/login",apiKeyAuth, login);
+router.post("/login", apiKeyAuth, login);
 
 
 router.post("/forgot-password", apiKeyAuth, forgotPassword)

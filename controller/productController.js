@@ -40,32 +40,32 @@ export const deleteProduct = async (req, res) => {
 
 
 
-export const topProducts = async (req,res)=>{
+export const topProducts = async (req, res) => {
 
-const stats = await Order.aggregate([
+  const stats = await Order.aggregate([
 
-{
-$match:{ status:"Delivered" }
-},
+    {
+      $match: { status: "Delivered" }
+    },
 
-{
-$group:{
-_id:"$productName",
-totalSold:{ $sum:"$quantity" }
-}
-},
+    {
+      $group: {
+        _id: "$productName",
+        totalSold: { $sum: "$quantity" }
+      }
+    },
 
-{
-$sort:{ totalSold:-1 }
-},
+    {
+      $sort: { totalSold: -1 }
+    },
 
-{
-$limit:5
-}
+    {
+      $limit: 5
+    }
 
-])
+  ])
 
-res.json(stats)
+  res.json(stats)
 
 }
 
