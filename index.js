@@ -35,6 +35,11 @@ app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
 
+app.get('/write', (req, res)=>{
+   
+    res.status(200).send(`<h1 style="text-align:center">WRITE</h1><br><br><br><br><br><br><br><br><br><h1 style="text-align:center">File Written Successfully :<br><span style="color:green">Date :</span></h1>`);
+  });
+
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
